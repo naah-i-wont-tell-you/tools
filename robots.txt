@@ -1,0 +1,38 @@
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://yourapp.vercel.app/sitemap.xml
+
+# Block access to sensitive files
+Disallow: /api/
+Disallow: /*.json
+Disallow: /vercel.json
+
+# Allow all PDF tools
+Allow: /merge
+Allow: /split
+Allow: /watermark
+Allow: /rotate
+Allow: /protect_unlock
+Allow: /signature
+Allow: /redact
+Allow: /paginate
+Allow: /pdf
+Allow: /privacy-policy
+Allow: /t&c
+Allow: /private
+Allow: /xtpdf
+Allow: /lock
+Allow: /unlock
+Allow: /protect
+Allow: /unprotect
+Allow: /viewer
+Allow: /chatgpt
+Allow: /gemini
+Allow: /perplexity
+Allow: /PDF
+
+
+# Crawl delay (optional - only if you experience high server load)
+# Crawl-delay: 1

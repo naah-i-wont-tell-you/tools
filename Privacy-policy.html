@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy - XTPdf</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+        }
+        
+        body {
+            background: #ffffff;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* Navbar */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background: #ffffff;
+            border-bottom: 1px solid #e8e8e8;
+        }
+        
+        nav .logo {
+            display: flex;
+            align-items: center;
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            text-decoration: none;
+        }
+        
+        nav .logo i {
+            margin-right: 8px;
+            font-size: 18px;
+            color: #333;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 32px;
+        }
+        
+        nav ul li a {
+            text-decoration: none;
+            color: #666;
+            font-weight: 400;
+            font-size: 15px;
+            transition: color 0.2s ease;
+        }
+        
+        nav ul li a:hover {
+            color: #333;
+        }
+
+        /* Main Content */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 60px 40px;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .page-header h1 {
+            font-size: 36px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 16px;
+        }
+
+        .last-updated {
+            color: #666;
+            font-size: 14px;
+            font-style: italic;
+        }
+
+        .content {
+            background: #f8f9fa;
+            padding: 40px;
+            border-radius: 12px;
+            border: 1px solid #e8e8e8;
+        }
+
+        .privacy-intro {
+            background: #e8f5e8;
+            padding: 30px;
+            border-radius: 12px;
+            border-left: 4px solid #28a745;
+            margin-bottom: 30px;
+        }
+
+        .privacy-intro h2 {
+            color: #155724;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+
+        .privacy-intro p {
+            color: #155724;
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 0;
+        }
+
+        .content h2 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin: 30px 0 15px 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .content h2:first-child {
+            margin-top: 0;
+        }
+
+        .content h2 i {
+            font-size: 20px;
+            color: #3498db;
+        }
+
+        .content p {
+            margin-bottom: 20px;
+            color: #555;
+            font-size: 16px;
+            line-height: 1.7;
+        }
+
+        .content ul {
+            margin: 20px 0;
+            padding-left: 30px;
+        }
+
+        .content ul li {
+            margin-bottom: 10px;
+            color: #555;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .guarantee-box {
+            background: #fff3cd;
+            padding: 25px;
+            border-left: 4px solid #ffc107;
+            border-radius: 0 8px 8px 0;
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .guarantee-box h3 {
+            color: #856404;
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .guarantee-box p {
+            color: #856404;
+            font-weight: 500;
+            font-size: 18px;
+            margin-bottom: 0;
+        }
+
+        /* Back Button */
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: #2c3e50;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            margin-bottom: 30px;
+        }
+
+        .back-button:hover {
+            background: #34495e;
+            transform: translateY(-2px);
+        }
+
+        .back-button i {
+            font-size: 14px;
+        }
+
+        /* Privacy Features Grid */
+        .privacy-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .privacy-feature {
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 10px;
+            border: 2px solid #e8e8e8;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .privacy-feature:hover {
+            border-color: #3498db;
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(52, 152, 219, 0.1);
+        }
+
+        .privacy-feature i {
+            font-size: 36px;
+            color: #3498db;
+            margin-bottom: 15px;
+        }
+
+        .privacy-feature h3 {
+            color: #2c3e50;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .privacy-feature p {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 0;
+        }
+
+        /* Footer */
+        footer {
+            background: #2c3e50;
+            color: #ffffff;
+            padding: 40px 40px 20px;
+            text-align: center;
+            margin-top: 80px;
+        }
+
+        .footer-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .footer-brand {
+            display: inline-flex;
+            align-items: center;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .footer-brand i {
+            margin-right: 8px;
+            font-size: 16px;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: #bbb;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.2s ease;
+        }
+
+        .footer-links a:hover {
+            color: #ffffff;
+        }
+
+        .footer-bottom {
+            font-size: 13px;
+            color: #999;
+            border-top: 1px solid #34495e;
+            padding-top: 20px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            nav {
+                padding: 16px 20px;
+            }
+
+            .container {
+                padding: 40px 20px;
+            }
+
+            .content {
+                padding: 30px 20px;
+            }
+
+            .page-header h1 {
+                font-size: 28px;
+            }
+
+            .content h2 {
+                font-size: 20px;
+            }
+
+            .privacy-features {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .footer-links {
+                gap: 20px;
+            }
+
+            footer {
+                padding: 40px 20px 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav>
+        <a href="index.html" class="logo">
+            <i class="fa-solid fa-file-pdf"></i> XTPdf
+        </a>
+        <ul>
+            <li><a href="index.html#tools">Tools</a></li>
+            <li><a href="index.html#features">Features</a></li>
+            <li><a href="index.html#how-it-works">How It Works</a></li>
+            <li><a href="terms-conditions.html">Terms</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <a href="index.html" class="back-button">
+            <i class="fa-solid fa-arrow-left"></i>
+            Back to Home
+        </a>
+
+        <div class="page-header">
+            <h1>Privacy Policy</h1>
+            <p class="last-updated">Last updated: January 2025</p>
+        </div>
+
+        <div class="content">
+            <div class="privacy-intro">
+                <h2><i class="fa-solid fa-shield-halved"></i> Your Privacy Comes First</h2>
+                <p>At XTPdf, your privacy is not just important—it's guaranteed by design.</p>
+            </div>
+
+            <h2><i class="fa-solid fa-upload"></i> No File Uploads</h2>
+            <p>All processing happens locally in your browser using WebAssembly and modern web technologies. Your files <strong>never leave your device</strong>—they're not uploaded to any server, anywhere.</p>
+
+            <h2><i class="fa-solid fa-database"></i> No Data Collection</h2>
+            <p>We do not collect, store, or share:</p>
+            <ul>
+                <li>Your documents or files</li>
+                <li>Personal information</li>
+                <li>Browsing activity</li>
+                <li>Usage patterns</li>
+                <li>Device information</li>
+            </ul>
+
+            <h2><i class="fa-solid fa-user-plus"></i> No Accounts Required</h2>
+            <p>You do not need to sign up, log in, or create an account to use XTPdf. Just visit our website and start using the tools immediately.</p>
+
+            <h2><i class="fa-solid fa-chart-line"></i> No Tracking</h2>
+            <p>We do not use:</p>
+            <ul>
+                <li>Cookies (except essential ones for the website to function)</li>
+                <li>Google Analytics or similar tracking services</li>
+                <li>Third-party trackers</li>
+                <li>Social media pixels</li>
+                <li>Advertising networks</li>
+            </ul>
+
+            <div class="privacy-features">
+                <div class="privacy-feature">
+                    <i class="fa-solid fa-microchip"></i>
+                    <h3>Your CPU Power</h3>
+                    <p>Processing uses your device's CPU—no server involvement</p>
+                </div>
+
+                <div class="privacy-feature">
+                    <i class="fa-solid fa-wifi"></i>
+                    <h3>Works Offline</h3>
+                    <p>Once loaded, tools work without internet connection</p>
+                </div>
+
+                <div class="privacy-feature">
+                    <i class="fa-solid fa-code"></i>
+                    <h3>Open Standards</h3>
+                    <p>Built with modern web standards and open source libraries</p>
+                </div>
+            </div>
+
+            <div class="guarantee-box">
+                <h3>Our Privacy Guarantee</h3>
+                <p>We don't see or store anything you do. Everything stays on your device.</p>
+            </div>
+
+            <h2><i class="fa-solid fa-envelope"></i> Contact Information</h2>
+            <p>If you have questions about this Privacy Policy or our privacy practices, you can contact us at:</p>
+            <p><strong>Email:</strong> xtpdfcustomercare@gmail.com</p>
+
+            <h2><i class="fa-solid fa-edit"></i> Changes to This Policy</h2>
+            <p>If we update this Privacy Policy, we will post the changes on this page and update the "Last updated" date. Since we don't collect your contact information, we cannot notify you directly of changes.</p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-brand">
+                <i class="fa-solid fa-file-pdf"></i> XTPdf
+            </div>
+            <div class="footer-links">
+                <a href="index.html">Home</a>
+                <a href="terms-conditions.html">Terms & Conditions</a>
+                <a href="privacy-policy.html">Privacy Policy</a>
+                <a href="#" onclick="openContactModal()">Contact</a>
+            </div>
+            <div class="footer-bottom">
+                &copy; 2025 XTPdf. All rights reserved.
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>

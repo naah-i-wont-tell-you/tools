@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protect PDF with Password - XTPdf</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@jspawn/qpdf-wasm/qpdf.mjs" type="module"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+        }
+        
+        body {
+            background: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background: #ffffff;
+            border-bottom: 1px solid #e8e8e8;
+        }
+        
+        nav .logo {
+            display: flex;
+            align-items: center;
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            text-decoration: none;
+        }
+        
+        nav .logo i {
+            margin-right: 8px;
+            font-size: 18px;
+            color: #333;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 32px;
+        }
+        
+        nav ul li a {
+            text-decoration: none;
+            color: #666;
+            font-weight: 400;
+            font-size: 15px;
+            transition: color 0.2s ease;
+        }
+        
+        nav ul li a:hover {
+            color: #333;
+        }
+        
+        .page-view {
+            display: none;
+        }
+        
+        .page-view.active {
+            display: block;
+        }
+        
+        .hero {
+            text-align: center;
+            padding: 60px 40px 40px;
+            background: #ffffff;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .hero h1 {
+            font-size: 42px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 16px;
+            line-height: 1.2;
+        }
+        
+        .hero p {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        
+        .hero .features {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .feature-item i {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px 40px;
+        }
+        
+        .main-section {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        }
+        
+        .section-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        
+        .upload-area {
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            padding: 60px 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 40px;
+        }
+        
+        .upload-area:hover {
+            border-color: #2c3e50;
+            background: #f8f9fa;
+        }
+        
+        .upload-area.dragover {
+            border-color: #2c3e50;
+            background: #f0f8ff;
+        }
+        
+        .upload-icon {
+            width: 60px;
+            height: 60px;
+            background: #e9ecef;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+        
+        .upload-icon i {
+            font-size: 24px;
+            color: #999;
+        }
+        
+        .upload-text {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        
+        .upload-subtext {
+            font-size: 14px;
+            color: #999;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .continue-button {
+            width: 100%;
+            background: #2c3e50;
+            color: #ffffff;
+            padding: 16px 32px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .continue-button:hover:not(:disabled) {
+            background: #34495e;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(44, 62, 80, 0.2);
+        }
+        
+        .continue-button:disabled {
+            background: #bbb;
+            cursor: not-allowed;
+        }
+        
+        .protect-interface {
+            background: #ffffff;
+            min-height: 100vh;
+        }
+        
+        .protect-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            border-bottom: 1px solid #e8e8e8;
+        }
+        
+        .back-link {
+            display: flex;
+            align-items: center;
+            color: #666;
+            text-decoration: none;
+            font-size: 14px;
+            margin-bottom: 20px;
+            transition: color 0.2s ease;
+        }
+        
+        .back-link:hover {
+            color: #333;
+        }
+        
+        .back-link i {
+            margin-right: 8px;
+        }
+        
+        .page-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .page-subtitle {
+            font-size: 16px;
+            color: #666;
+        }
+        
+        .protect-content {
+            display: flex;
+            height: calc(100vh - 140px);
+        }
+        
+        .sidebar {
+            width: 320px;
+            background: #f8f9fa;
+            border-right: 1px solid #e8e8e8;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .sidebar-section {
+            margin-bottom: 30px;
+        }
+        
+        .sidebar-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 16px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.2s ease;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #2c3e50;
+        }
+        
+        .form-hint {
+            font-size: 12px;
+            color: #666;
+            margin-top: 4px;
+            line-height: 1.4;
+        }
+        
+        .password-field {
+            position: relative;
+        }
+        
+        .password-toggle {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            transition: background-color 0.2s ease;
+        }
+        
+        .password-toggle:hover {
+            background: rgba(0, 0, 0, 0.05);
+        }
+        
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .checkbox-item input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+        
+        .checkbox-item label {
+            font-size: 14px;
+            color: #333;
+            cursor: pointer;
+            margin: 0;
+        }
+        
+        .info-section {
+            background: #ffffff;
+            padding: 16px;
+            border-radius: 6px;
+            border: 1px solid #e8e8e8;
+        }
+        
+        .info-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+            font-size: 13px;
+        }
+        
+        .process-section {
+            margin-top: auto;
+            padding-top: 20px;
+            border-top: 1px solid #e8e8e8;
+        }
+        
+        .process-btn {
+            width: 100%;
+            background: #28a745;
+            color: #ffffff;
+            padding: 12px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .process-btn:hover:not(:disabled) {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+        
+        .process-btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .pdf-viewer {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #f0f0f0;
+        }
+        
+        .viewer-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            background: #ffffff;
+            border-bottom: 1px solid #e8e8e8;
+        }
+        
+        .file-info-toolbar {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .file-icon {
+            width: 32px;
+            height: 32px;
+            background: #e9ecef;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .file-icon i {
+            font-size: 16px;
+            color: #666;
+        }
+        
+        .file-details {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .file-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 2px;
+        }
+        
+        .file-size {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .security-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: #d4edda;
+            color: #155724;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .security-badge i {
+            font-size: 12px;
+        }
+        
+        .preview-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+        }
+        
+        .preview-content {
+            text-align: center;
+            max-width: 400px;
+        }
+        
+        .preview-icon {
+            width: 120px;
+            height: 120px;
+            background: #ffffff;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .preview-icon i {
+            font-size: 48px;
+            color: #2c3e50;
+        }
+        
+        .preview-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12px;
+        }
+        
+        .preview-description {
+            font-size: 16px;
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+        
+        .protection-features {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        
+        .protection-feature {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            background: #ffffff;
+            border-radius: 8px;
+            border: 1px solid #e8e8e8;
+        }
+        
+        .protection-feature i {
+            font-size: 16px;
+            color: #28a745;
+        }
+        
+        .protection-feature span {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .status-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+            max-width: 300px;
+        }
+        
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .status-info {
+            background: #cce7ff;
+            color: #004085;
+            border: 1px solid #b3d9ff;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .protect-content {
+                flex-direction: column;
+                height: auto;
+            }
+            .sidebar {
+                width: 100%;
+            }
+            nav {
+                padding: 16px 20px;
+            }
+            nav ul {
+                display: none;
+            }
+            .main-content {
+                padding: 20px;
+            }
+            .main-section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Upload Page -->
+    <div id="uploadPage" class="page-view active">
+        <nav>
+            <a href="#" class="logo">
+                <i class="fa-solid fa-lock"></i> XTPdf
+            </a>
+            <ul>
+                <li><a href="#tools">Tools</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#about">About</a></li>
+            </ul>
+        </nav>
+
+        <section class="hero">
+            <h1>Protect PDF with Password</h1>
+            <p>Secure your PDF documents with strong password protection and advanced permission controls</p>
+            <div class="features">
+                <div class="feature-item">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <span>100% Client-Side Processing</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fa-solid fa-cloud-slash"></i>
+                    <span>No Server Upload</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fa-solid fa-key"></i>
+                    <span>Advanced Permissions</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fa-solid fa-lock"></i>
+                    <span>Strong Encryption</span>
+                </div>
+            </div>
+        </section>
+
+        <div class="main-content">
+            <div class="main-section">
+                <h2 class="section-title">Upload PDF Document</h2>
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                    </div>
+                    <div class="upload-text">Drop your PDF here or click to browse</div>
+                    <div class="upload-subtext">Maximum file size: 50MB</div>
+                </div>
+                <input type="file" id="fileInput" class="file-input" accept=".pdf">
+
+                <div class="button-container">
+                    <button class="continue-button" id="continueBtn" disabled>
+            <i class="fa-solid fa-lock"></i>
+            Continue to Password Protection
+          </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Protection Configuration Page -->
+    <div id="protectPage" class="page-view">
+        <div class="protect-interface">
+            <nav>
+                <a href="#" class="logo">
+                    <i class="fa-solid fa-lock"></i> XTPdf
+                </a>
+                <ul>
+                    <li><a href="#tools">Tools</a></li>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#about">About</a></li>
+                </ul>
+            </nav>
+
+            <div class="protect-header">
+                <div>
+                    <a href="#" class="back-link" id="backToTools">
+                        <i class="fa-solid fa-arrow-left"></i> Back to Tools
+                    </a>
+                    <div class="page-title">Protect PDF with Password</div>
+                    <div class="page-subtitle">Configure password protection and permissions for your PDF document</div>
+                </div>
+            </div>
+
+            <div class="protect-content">
+                <div class="sidebar">
+                    <div class="sidebar-section">
+                        <div class="sidebar-title">Password Settings</div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="userPassword">User Password *</label>
+                            <div class="password-field">
+                                <input type="password" id="userPassword" class="form-input" placeholder="Enter password to open PDF">
+                                <button type="button" class="password-toggle" onclick="togglePassword('userPassword')">
+                  <i class="fa-solid fa-eye"></i>
+                </button>
+                            </div>
+                            <div class="form-hint">Required password for viewing the PDF document</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="ownerPassword">Owner Password (Optional)</label>
+                            <div class="password-field">
+                                <input type="password" id="ownerPassword" class="form-input" placeholder="Advanced permissions password">
+                                <button type="button" class="password-toggle" onclick="togglePassword('ownerPassword')">
+                  <i class="fa-solid fa-eye"></i>
+                </button>
+                            </div>
+                            <div class="form-hint">Leave empty to use the same as user password. Controls document permissions.</div>
+                        </div>
+                    </div>
+
+                    <div class="sidebar-section">
+                        <div class="sidebar-title">Permission Restrictions</div>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="allowPrint" checked>
+                                <label for="allowPrint">Allow Printing</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="allowCopy" checked>
+                                <label for="allowCopy">Allow Text Copying</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="allowModify" checked>
+                                <label for="allowModify">Allow Document Modification</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="allowAnnotate" checked>
+                                <label for="allowAnnotate">Allow Annotations & Forms</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="allowFillForms" checked>
+                                <label for="allowFillForms">Allow Form Filling</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="allowAssemble" checked>
+                                <label for="allowAssemble">Allow Page Assembly</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="sidebar-section">
+                        <div class="info-section">
+                            <div class="info-title">Protection Summary</div>
+                            <div class="info-item">
+                                <span>User Password:</span>
+                                <span id="passwordStatus">Not Set</span>
+                            </div>
+                            <div class="info-item">
+                                <span>Owner Password:</span>
+                                <span id="ownerPasswordStatus">Same as User</span>
+                            </div>
+                            <div class="info-item">
+                                <span>Restrictions:</span>
+                                <span id="restrictionCount">0 Applied</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="process-section">
+                        <button class="process-btn" id="processBtn" disabled>
+              <i class="fa-solid fa-lock"></i>
+              Protect & Download PDF
+            </button>
+                    </div>
+                </div>
+
+                <div class="pdf-viewer">
+                    <div class="viewer-toolbar">
+                        <div class="file-info-toolbar">
+                            <div class="file-icon">
+                                <i class="fa-solid fa-file-pdf"></i>
+                            </div>
+                            <div class="file-details">
+                                <div class="file-name" id="fileName">No file selected</div>
+                                <div class="file-size" id="fileSize">0 KB</div>
+                            </div>
+                        </div>
+                        <div class="security-badge" id="securityBadge" style="display: none;">
+                            <i class="fa-solid fa-shield-halved"></i>
+                            <span>Password Protected</span>
+                        </div>
+                    </div>
+
+                    <div class="preview-area">
+                        <div class="preview-content">
+                            <div class="preview-icon">
+                                <i class="fa-solid fa-shield-halved"></i>
+                            </div>
+                            <div class="preview-title">PDF Protection Preview</div>
+                            <div class="preview-description">
+                                Your PDF will be encrypted with the specified password and permission settings. The protected document will require the user password to open and view.
+                            </div>
+
+                            <div class="protection-features">
+                                <div class="protection-feature">
+                                    <i class="fa-solid fa-key"></i>
+                                    <span>Strong AES-256 encryption for maximum security</span>
+                                </div>
+                                <div class="protection-feature">
+                                    <i class="fa-solid fa-lock"></i>
+                                    <span>Password required to open document</span>
+                                </div>
+                                <div class="protection-feature">
+                                    <i class="fa-solid fa-shield-halved"></i>
+                                    <span>Configurable permission restrictions</span>
+                                </div>
+                                <div class="protection-feature">
+                                    <i class="fa-solid fa-desktop"></i>
+                                    <span>Works with all PDF viewers</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let selectedFile = null;
+        let fileName = 'document';
+        let qpdfMod = null;
+
+        async function initializeQpdf() {
+            if (qpdfMod) return qpdfMod;
+
+            const qpdfFactory = await
+            import ('https://cdn.jsdelivr.net/npm/@jspawn/qpdf-wasm/qpdf.mjs');
+            qpdfMod = await qpdfFactory.default({
+                locateFile: (path) => path.endsWith(".wasm") ?
+                    "https://cdn.jsdelivr.net/npm/@jspawn/qpdf-wasm/qpdf.wasm" : path
+            });
+
+            return qpdfMod;
+        }
+
+        function showStatus(message, type = 'success') {
+            const statusEl = document.createElement('div');
+            statusEl.className = `status-message status-${type}`;
+            statusEl.textContent = message;
+            document.body.appendChild(statusEl);
+
+            setTimeout(() => {
+                if (statusEl && statusEl.parentNode) {
+                    statusEl.parentNode.removeChild(statusEl);
+                }
+            }, 3000);
+        }
+
+        function showPage(pageId) {
+            document.querySelectorAll('.page-view').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById(pageId).classList.add('active');
+        }
+
+        // Upload functionality
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const continueBtn = document.getElementById('continueBtn');
+
+        uploadArea.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        fileInput.addEventListener('change', async(e) => {
+            const file = e.target.files[0];
+            if (file && file.type === 'application/pdf') {
+                if (file.size > 50 * 1024 * 1024) { // 50MB limit
+                    showStatus('File size exceeds 50MB limit', 'error');
+                    return;
+                }
+
+                selectedFile = file;
+                fileName = file.name.replace(/\.pdf$/i, '') || 'document';
+                const fileSize = (file.size / (1024 * 1024)).toFixed(1);
+
+                uploadArea.innerHTML = `
+          <div class="upload-icon">
+            <i class="fa-solid fa-file-pdf" style="color: #2c3e50;"></i>
+          </div>
+          <div class="upload-text" style="color: #2c3e50; font-weight: 500;">${file.name}</div>
+          <div class="upload-subtext">Size: ${fileSize} MB - Click to change file</div>
+        `;
+
+                continueBtn.disabled = false;
+                showStatus('PDF loaded successfully!');
+            } else {
+                showStatus('Please select a valid PDF file', 'error');
+            }
+        });
+
+        // Drag and drop
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const file = e.dataTransfer.files[0];
+            if (file && file.type === 'application/pdf') {
+                fileInput.files = e.dataTransfer.files;
+                fileInput.dispatchEvent(new Event('change'));
+            }
+        });
+
+        // Continue button
+        continueBtn.addEventListener('click', () => {
+            if (selectedFile) {
+                showPage('protectPage');
+                updateFileInfo();
+            }
+        });
+
+        // Back navigation
+        document.getElementById('backToTools').addEventListener('click', (e) => {
+            e.preventDefault();
+            showPage('uploadPage');
+        });
+
+        // Update file info in protection page
+        function updateFileInfo() {
+            if (!selectedFile) return;
+
+            const fileSize = selectedFile.size < 1024 * 1024 ?
+                `${(selectedFile.size / 1024).toFixed(0)} KB` :
+                `${(selectedFile.size / (1024 * 1024)).toFixed(1)} MB`;
+
+            document.getElementById('fileName').textContent = selectedFile.name;
+            document.getElementById('fileSize').textContent = fileSize;
+        }
+
+        // Password toggle functionality
+        window.togglePassword = function(fieldId) {
+            const field = document.getElementById(fieldId);
+            const button = field.nextElementSibling.querySelector('i');
+
+            if (field.type === "password") {
+                field.type = "text";
+                button.className = "fa-solid fa-eye-slash";
+            } else {
+                field.type = "password";
+                button.className = "fa-solid fa-eye";
+            }
+        };
+
+        // Form validation and status updates
+        function updateProtectionStatus() {
+            const userPassword = document.getElementById('userPassword').value;
+            const ownerPassword = document.getElementById('ownerPassword').value;
+            const processBtn = document.getElementById('processBtn');
+            const securityBadge = document.getElementById('securityBadge');
+
+            // Update password status
+            document.getElementById('passwordStatus').textContent = userPassword ? 'Set' : 'Not Set';
+            document.getElementById('ownerPasswordStatus').textContent =
+                ownerPassword ? 'Custom Set' : 'Same as User';
+
+            // Count restrictions
+            const checkboxes = document.querySelectorAll('.checkbox-item input[type="checkbox"]');
+            const uncheckedCount = Array.from(checkboxes).filter(cb => !cb.checked).length;
+            document.getElementById('restrictionCount').textContent =
+                uncheckedCount > 0 ? `${uncheckedCount} Applied` : '0 Applied';
+
+            // Show/hide security badge
+            if (userPassword) {
+                securityBadge.style.display = 'flex';
+            } else {
+                securityBadge.style.display = 'none';
+            }
+
+            // Enable/disable process button
+            processBtn.disabled = !userPassword;
+        }
+
+        // Add event listeners for form updates
+        document.getElementById('userPassword').addEventListener('input', updateProtectionStatus);
+        document.getElementById('ownerPassword').addEventListener('input', updateProtectionStatus);
+        document.querySelectorAll('.checkbox-item input[type="checkbox"]').forEach(cb => {
+            cb.addEventListener('change', updateProtectionStatus);
+        });
+
+        // Process and protect PDF
+        document.getElementById('processBtn').addEventListener('click', async() => {
+            const userPassword = document.getElementById('userPassword').value;
+            const ownerPassword = document.getElementById('ownerPassword').value || userPassword;
+
+            if (!userPassword) {
+                showStatus('Please enter a user password', 'error');
+                return;
+            }
+
+            try {
+                const processBtn = document.getElementById('processBtn');
+                processBtn.disabled = true;
+                processBtn.innerHTML = `
+            <i class="fa-solid fa-spinner fa-spin"></i>
+            Processing...
+        `;
+
+                showStatus('Protecting PDF...', 'info');
+
+                // Initialize qpdf
+                await initializeQpdf();
+
+                // Prepare file paths
+                const inputFile = "input.pdf";
+                const outputFile = "output.pdf";
+
+                // Write input file
+                const fileBytes = new Uint8Array(await selectedFile.arrayBuffer());
+                qpdfMod.FS.writeFile(inputFile, fileBytes);
+
+                // Build qpdf arguments
+                const args = [
+                    "--encrypt", userPassword, ownerPassword, "256",
+                    "--"
+                ];
+
+                // Add permission restrictions before the "--" argument
+                const permissions = [];
+
+                if (!document.getElementById('allowPrint').checked) {
+                    permissions.push("--print=none");
+                } else {
+                    permissions.push("--print=full");
+                }
+
+                if (!document.getElementById('allowModify').checked) {
+                    permissions.push("--modify=none");
+                } else {
+                    permissions.push("--modify=all");
+                }
+
+                if (!document.getElementById('allowCopy').checked) {
+                    permissions.push("--extract=n");
+                } else {
+                    permissions.push("--extract=y");
+                }
+
+                if (!document.getElementById('allowAnnotate').checked) {
+                    permissions.push("--annotate=n");
+                } else {
+                    permissions.push("--annotate=y");
+                }
+
+                if (!document.getElementById('allowFillForms').checked) {
+                    permissions.push("--form=n");
+                } else {
+                    permissions.push("--form=y");
+                }
+
+                if (!document.getElementById('allowAssemble').checked) {
+                    permissions.push("--assemble=n");
+                } else {
+                    permissions.push("--assemble=y");
+                }
+
+                // Insert permissions before the "--" separator
+                args.splice(args.indexOf("--"), 0, ...permissions);
+
+                // Add input and output files after "--"
+                args.push(inputFile, outputFile);
+
+                // Execute qpdf with updated arguments
+                console.log('QPDF Arguments:', args); // For debugging
+                qpdfMod.callMain(args);
+
+                // Read output file
+                const outputBytes = qpdfMod.FS.readFile(outputFile);
+
+                // Cleanup
+                try {
+                    qpdfMod.FS.unlink(inputFile);
+                } catch {}
+                try {
+                    qpdfMod.FS.unlink(outputFile);
+                } catch {}
+
+                // Download the protected PDF
+                const blob = new Blob([outputBytes], {
+                    type: 'application/pdf'
+                });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${fileName}_protected.pdf`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+
+                showStatus('PDF successfully protected and downloaded!');
+
+                // Reset form
+                document.getElementById('userPassword').value = '';
+                document.getElementById('ownerPassword').value = '';
+                document.querySelectorAll('.checkbox-item input[type="checkbox"]').forEach(cb => {
+                    cb.checked = true;
+                });
+                updateProtectionStatus();
+
+            } catch (error) {
+                console.error('Error protecting PDF:', error);
+                showStatus('Error protecting PDF: ' + (error.message || 'Unknown error'), 'error');
+            } finally {
+                processBtn.disabled = false;
+                processBtn.innerHTML = `
+            <i class="fa-solid fa-lock"></i>
+            Protect & Download PDF
+        `;
+            }
+        });
+
+        // Initialize protection status
+        updateProtectionStatus();
+
+        // Keyboard shortcuts for better UX
+        document.addEventListener('keydown', (e) => {
+            if (document.getElementById('protectPage').classList.contains('active')) {
+                // Enter key to process if password is set
+                if (e.key === 'Enter' && !document.getElementById('processBtn').disabled) {
+                    document.getElementById('processBtn').click();
+                }
+                // Escape key to go back
+                if (e.key === 'Escape') {
+                    document.getElementById('backToTools').click();
+                }
+            }
+        });
+
+        // Auto-focus on user password field when protection page loads
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                    const protectPage = document.getElementById('protectPage');
+                    if (protectPage.classList.contains('active')) {
+                        setTimeout(() => {
+                            document.getElementById('userPassword').focus();
+                        }, 100);
+                    }
+                }
+            });
+        });
+
+        observer.observe(document.getElementById('protectPage'), {
+            attributes: true,
+            attributeFilter: ['class']
+        });
+    </script>
+</body>
+
+</html>

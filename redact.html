@@ -1,0 +1,1494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Redact PDF - XTPdf</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    }
+
+    body {
+      background: #f8f9fa;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 40px;
+      background: #ffffff;
+      border-bottom: 1px solid #e8e8e8;
+    }
+
+    nav .logo {
+      display: flex;
+      align-items: center;
+      font-size: 20px;
+      font-weight: 600;
+      color: #333;
+      text-decoration: none;
+    }
+
+    nav .logo i {
+      margin-right: 8px;
+      font-size: 18px;
+      color: #333;
+    }
+
+    nav ul {
+      display: flex;
+      list-style: none;
+      gap: 32px;
+    }
+
+    nav ul li a {
+      text-decoration: none;
+      color: #666;
+      font-weight: 400;
+      font-size: 15px;
+      transition: color 0.2s ease;
+    }
+
+    nav ul li a:hover {
+      color: #333;
+    }
+
+    .page-view {
+      display: none;
+    }
+
+    .page-view.active {
+      display: block;
+    }
+
+    .hero {
+      text-align: center;
+      padding: 60px 40px 40px;
+      background: #ffffff;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .hero h1 {
+      font-size: 42px;
+      font-weight: 700;
+      color: #2c3e50;
+      margin-bottom: 16px;
+      line-height: 1.2;
+    }
+
+    .hero p {
+      font-size: 18px;
+      color: #666;
+      margin-bottom: 30px;
+      line-height: 1.6;
+    }
+
+    .hero .features {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      color: #666;
+      font-size: 14px;
+      margin-bottom: 40px;
+      flex-wrap: wrap;
+    }
+
+    .feature-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .feature-item i {
+      font-size: 14px;
+      color: #666;
+    }
+
+    .main-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px 40px;
+    }
+
+    .main-section {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 40px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+
+    .section-title {
+      font-size: 24px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 30px;
+    }
+
+    .upload-area {
+      border: 2px dashed #ddd;
+      border-radius: 8px;
+      padding: 60px 40px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-bottom: 40px;
+    }
+
+    .upload-area:hover {
+      border-color: #2c3e50;
+      background: #f8f9fa;
+    }
+
+    .upload-area.dragover {
+      border-color: #2c3e50;
+      background: #f0f8ff;
+    }
+
+    .upload-icon {
+      width: 60px;
+      height: 60px;
+      background: #e9ecef;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+    }
+
+    .upload-icon i {
+      font-size: 24px;
+      color: #999;
+    }
+
+    .upload-text {
+      font-size: 16px;
+      color: #666;
+      margin-bottom: 8px;
+    }
+
+    .upload-subtext {
+      font-size: 14px;
+      color: #999;
+    }
+
+    .file-input {
+      display: none;
+    }
+
+    .continue-button {
+      width: 100%;
+      background: #2c3e50;
+      color: #ffffff;
+      padding: 16px 32px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .continue-button:hover:not(:disabled) {
+      background: #34495e;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(44, 62, 80, 0.2);
+    }
+
+    .continue-button:disabled {
+      background: #bbb;
+      cursor: not-allowed;
+    }
+
+    .redaction-interface {
+      background: #ffffff;
+      min-height: 100vh;
+    }
+
+    .redaction-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 40px;
+      border-bottom: 1px solid #e8e8e8;
+    }
+
+    .back-link {
+      display: flex;
+      align-items: center;
+      color: #666;
+      text-decoration: none;
+      font-size: 14px;
+      margin-bottom: 20px;
+      transition: color 0.2s ease;
+    }
+
+    .back-link:hover {
+      color: #333;
+    }
+
+    .back-link i {
+      margin-right: 8px;
+    }
+
+    .page-title {
+      font-size: 28px;
+      font-weight: 700;
+      color: #333;
+      margin-bottom: 8px;
+    }
+
+    .page-subtitle {
+      font-size: 16px;
+      color: #666;
+    }
+
+    .redaction-content {
+      display: flex;
+      height: calc(100vh - 140px);
+    }
+
+    .sidebar {
+      width: 300px;
+      background: #f8f9fa;
+      border-right: 1px solid #e8e8e8;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .sidebar-section {
+      margin-bottom: 30px;
+    }
+
+    .sidebar-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 16px;
+    }
+
+    .tool-button {
+      width: 100%;
+      padding: 12px 16px;
+      margin-bottom: 8px;
+      border: 1px solid #e8e8e8;
+      background: #ffffff;
+      color: #333;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .tool-button:hover {
+      border-color: #2c3e50;
+      background: #f8f9fa;
+    }
+
+    .tool-button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      background: #f5f5f5;
+    }
+
+    .tool-button i {
+      font-size: 16px;
+    }
+
+    .pdf-viewer {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: #f0f0f0;
+    }
+
+    .viewer-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+      background: #ffffff;
+      border-bottom: 1px solid #e8e8e8;
+    }
+
+    .page-navigation {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .page-nav-btn {
+      width: 32px;
+      height: 32px;
+      border: 1px solid #ddd;
+      background: #ffffff;
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .page-nav-btn:hover:not(:disabled) {
+      border-color: #2c3e50;
+      color: #2c3e50;
+    }
+
+    .page-nav-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .page-info {
+      font-size: 14px;
+      color: #666;
+    }
+
+    .zoom-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .zoom-btn {
+      width: 32px;
+      height: 32px;
+      border: 1px solid #ddd;
+      background: #ffffff;
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .zoom-btn:hover {
+      border-color: #2c3e50;
+      color: #2c3e50;
+    }
+
+    .zoom-level {
+      font-size: 14px;
+      color: #666;
+      min-width: 40px;
+      text-align: center;
+    }
+
+    .pdf-canvas-container {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 20px;
+      overflow: auto;
+      position: relative;
+    }
+
+    .pdf-page {
+      position: relative;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      background: white;
+    }
+
+    .pdf-canvas {
+      display: block;
+      max-width: 100%;
+      height: auto;
+    }
+
+    .redaction-overlay {
+      position: absolute;
+      border: 2px solid #ff6b6b;
+      cursor: move;
+      min-width: 20px;
+      min-height: 20px;
+    }
+
+    .redaction-overlay:hover {
+      border-color: #ff5252;
+    }
+
+    .resize-handle {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: #ff6b6b;
+      border: 1px solid white;
+    }
+
+    .resize-handle.nw { top: -4px; left: -4px; cursor: nw-resize; }
+    .resize-handle.ne { top: -4px; right: -4px; cursor: ne-resize; }
+    .resize-handle.sw { bottom: -4px; left: -4px; cursor: sw-resize; }
+    .resize-handle.se { bottom: -4px; right: -4px; cursor: se-resize; }
+
+    .color-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .color-swatch {
+      width: 32px;
+      height: 32px;
+      border-radius: 4px;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all 0.2s ease;
+    }
+
+    .color-swatch:hover {
+      transform: scale(1.1);
+    }
+
+    .color-swatch.selected {
+      border-color: #2c3e50;
+      transform: scale(1.1);
+    }
+
+    .style-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .style-button {
+      padding: 8px 12px;
+      border: 1px solid #e8e8e8;
+      background: #ffffff;
+      border-radius: 4px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: center;
+    }
+
+    .style-button:hover {
+      border-color: #2c3e50;
+      background: #f8f9fa;
+    }
+
+    .style-button.selected {
+      background: #2c3e50;
+      color: #ffffff;
+      border-color: #2c3e50;
+    }
+
+    .opacity-control {
+      margin-top: 16px;
+    }
+
+    .opacity-label {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 8px;
+    }
+
+    .opacity-slider {
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: linear-gradient(to right, #e9ecef, #2c3e50);
+      outline: none;
+      cursor: pointer;
+    }
+
+    .download-section {
+      margin-top: auto;
+      padding-top: 20px;
+      border-top: 1px solid #e8e8e8;
+    }
+
+    .download-btn {
+      width: 100%;
+      background: #28a745;
+      color: #ffffff;
+      padding: 12px 16px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .download-btn:hover {
+      background: #218838;
+      transform: translateY(-2px);
+    }
+
+    .download-btn:disabled {
+      background: #6c757d;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .status-message {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 12px 20px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      z-index: 1000;
+      animation: slideIn 0.3s ease;
+      max-width: 300px;
+    }
+
+    .status-success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .status-error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .redaction-content {
+        flex-direction: column;
+        height: auto;
+      }
+
+      .sidebar {
+        width: 100%;
+      }
+
+      nav {
+        padding: 16px 20px;
+      }
+
+      nav ul {
+        display: none;
+      }
+
+      .main-content {
+        padding: 20px;
+      }
+
+      .main-section {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Upload Page -->
+  <div id="uploadPage" class="page-view active">
+    <nav>
+      <a href="#" class="logo">
+        <i class="fa-solid fa-file-pdf"></i>
+        XTPdf
+      </a>
+      <ul>
+        <li><a href="#tools">Tools</a></li>
+        <li><a href="#features">Features</a></li>
+        <li><a href="#about">About</a></li>
+      </ul>
+    </nav>
+
+    <section class="hero">
+      <h1>Redact PDF</h1>
+      <p>Remove sensitive information from your PDF documents securely</p>
+      <div class="features">
+        <div class="feature-item">
+          <i class="fa-solid fa-shield-halved"></i>
+          <span>100% Client-Side Processing</span>
+        </div>
+        <div class="feature-item">
+          <i class="fa-solid fa-cloud-slash"></i>
+          <span>No Server Upload</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="main-content">
+      <div class="main-section">
+        <h2 class="section-title">Upload PDF Document</h2>
+        <div class="upload-area" id="uploadArea">
+          <div class="upload-icon">
+            <i class="fa-solid fa-cloud-arrow-up"></i>
+          </div>
+          <div class="upload-text">Drop your PDF here or click to browse</div>
+          <div class="upload-subtext">Maximum file size: 50MB</div>
+        </div>
+        <input type="file" id="fileInput" class="file-input" accept=".pdf">
+
+        <div class="button-container">
+          <button class="continue-button" id="continueBtn" disabled>
+            <i class="fa-solid fa-play"></i>
+            Continue to Redaction
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Redaction Interface Page -->
+  <div id="redactionPage" class="page-view">
+    <div class="redaction-interface">
+      <nav>
+        <a href="#" class="logo">
+          <i class="fa-solid fa-file-pdf"></i>
+          XTPdf
+        </a>
+        <ul>
+          <li><a href="#tools">Tools</a></li>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#about">About</a></li>
+        </ul>
+      </nav>
+
+      <div class="redaction-header">
+        <div>
+          <a href="#" class="back-link" id="backToTools">
+            <i class="fa-solid fa-arrow-left"></i>
+            Back to Tools
+          </a>
+          <div class="page-title">Redact PDF</div>
+          <div class="page-subtitle">Remove sensitive information from your PDF documents securely</div>
+        </div>
+      </div>
+
+      <div class="redaction-content">
+        <div class="sidebar">
+          <div class="sidebar-section">
+            <div class="sidebar-title">Redaction Tools</div>
+            <button class="tool-button" id="undoBtn" disabled>
+              <i class="fa-solid fa-undo"></i>
+              Undo Last Action
+            </button>
+            <button class="tool-button" id="clearAllBtn">
+              <i class="fa-solid fa-trash"></i>
+              Clear All
+            </button>
+          </div>
+
+          <div class="sidebar-section">
+            <div class="sidebar-title">Redaction Color</div>
+            <div class="color-grid">
+              <div class="color-swatch selected" style="background: #000" data-color="#000000"></div>
+              <div class="color-swatch" style="background: #1e3a8a" data-color="#1e3a8a"></div>
+              <div class="color-swatch" style="background: #dc3545" data-color="#dc3545"></div>
+              <div class="color-swatch" style="background: #fff; border: 1px solid #ddd;" data-color="#ffffff"></div>
+            </div>
+          </div>
+
+          <div class="sidebar-section">
+            <div class="sidebar-title">Redaction Style</div>
+            <div class="style-grid">
+              <button class="style-button selected" data-style="solid">Solid</button>
+              <button class="style-button" data-style="striped">Striped</button>
+              <button class="style-button" data-style="blur">Blur</button>
+              <button class="style-button" data-style="dotted">Dotted</button>
+            </div>
+            <div class="opacity-control">
+              <div class="opacity-label">Opacity: <span id="opacityValue">90%</span></div>
+              <input type="range" class="opacity-slider" id="opacitySlider" min="50" max="100" value="90">
+            </div>
+          </div>
+
+          <div class="download-section">
+            <button class="download-btn" id="downloadBtn" disabled>
+              <i class="fa-solid fa-download"></i>
+              Download Redacted PDF
+            </button>
+          </div>
+        </div>
+
+        <div class="pdf-viewer">
+          <div class="viewer-toolbar">
+            <div class="page-navigation">
+              <button class="page-nav-btn" id="prevPage" disabled>
+                <i class="fa-solid fa-chevron-left"></i>
+              </button>
+              <span class="page-info" id="pageInfo">Page 1 of 1</span>
+              <button class="page-nav-btn" id="nextPage" disabled>
+                <i class="fa-solid fa-chevron-right"></i>
+              </button>
+            </div>
+            <div class="zoom-controls">
+              <button class="zoom-btn" id="zoomOut">
+                <i class="fa-solid fa-search-minus"></i>
+              </button>
+              <span class="zoom-level" id="zoomLevel">100%</span>
+              <button class="zoom-btn" id="zoomIn">
+                <i class="fa-solid fa-search-plus"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="pdf-canvas-container" id="canvasContainer">
+            <div id="loadingMessage" style="text-align: center; padding: 40px; font-size: 16px; color: #666;">Loading PDF...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Set PDF.js worker
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+    // Global variables
+    let currentPage = 1;
+    let totalPages = 1;
+    let zoomLevel = 1.0;
+    let selectedFile = null;
+    let pdfDoc = null;
+    let originalFileBytes = null;  // Store as raw file data
+    let redactions = [];
+    let redactionHistory = [];
+    let selectedColor = '#000000';
+    let selectedStyle = 'solid';
+    let opacity = 0.9;
+    let isDrawing = false;
+    let startX, startY, currentRedaction = null;
+
+    function showStatus(message, type = 'success') {
+      const statusEl = document.createElement('div');
+      statusEl.className = `status-message status-${type}`;
+      statusEl.textContent = message;
+      document.body.appendChild(statusEl);
+      
+      setTimeout(() => {
+        if (statusEl && statusEl.parentNode) {
+          statusEl.parentNode.removeChild(statusEl);
+        }
+      }, 3000);
+    }
+
+    function showPage(pageId) {
+      document.querySelectorAll('.page-view').forEach(page => {
+        page.classList.remove('active');
+      });
+      document.getElementById(pageId).classList.add('active');
+    }
+
+    function saveState() {
+      redactionHistory.push(JSON.parse(JSON.stringify(redactions)));
+      document.getElementById('undoBtn').disabled = false;
+    }
+
+    function undo() {
+      if (redactionHistory.length > 0) {
+        redactions = redactionHistory.pop();
+        document.getElementById('undoBtn').disabled = redactionHistory.length === 0;
+        renderPage(currentPage);
+        showStatus('Action undone');
+      }
+    }
+
+    function hexToRgb(hex) {
+      const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+      return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+      } : { r: 0, g: 0, b: 0 };
+    }
+
+    function getRedactionStyle() {
+      const rgb = hexToRgb(selectedColor);
+      const alpha = opacity;
+      
+      switch (selectedStyle) {
+        case 'solid':
+          return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${alpha})`;
+        case 'striped':
+          return `repeating-linear-gradient(45deg, rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${alpha}) 0px, rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${alpha}) 8px, transparent 8px, transparent 16px)`;
+        case 'blur':
+          return `rgba(150, 150, 150, ${alpha})`;
+        case 'dotted':
+          return `radial-gradient(circle at 50% 50%, rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${alpha}) 30%, transparent 30%)`;
+        default:
+          return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${alpha})`;
+      }
+    }
+
+    function getRedactionStyleFromData(redaction) {
+      const rgb = hexToRgb(redaction.color);
+      const alpha = redaction.opacity;
+      
+      switch (redaction.style) {
+        case 'solid':
+          return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${alpha})`;
+        case 'striped':
+          return `repeating-linear-gradient(45deg, rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${alpha}) 0px, rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${alpha}) 8px, transparent 8px, transparent 16px)`;
+        case 'blur':
+          return `rgba(150, 150, 150, ${alpha})`;
+        case 'dotted':
+          return `radial-gradient(circle at 50% 50%, rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${alpha}) 30%, transparent 30%)`;
+        default:
+          return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${alpha})`;
+      }
+    }
+
+    // Upload functionality
+    const uploadArea = document.getElementById('uploadArea');
+    const fileInput = document.getElementById('fileInput');
+    const continueBtn = document.getElementById('continueBtn');
+
+    uploadArea.addEventListener('click', () => {
+      fileInput.click();
+    });
+
+    fileInput.addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (file && file.type === 'application/pdf') {
+        selectedFile = file;
+        const fileName = file.name;
+        const fileSize = (file.size / (1024 * 1024)).toFixed(1);
+        
+        uploadArea.innerHTML = `
+          <div class="upload-icon">
+            <i class="fa-solid fa-file-pdf" style="color: #2c3e50;"></i>
+          </div>
+          <div class="upload-text" style="color: #2c3e50; font-weight: 500;">${fileName}</div>
+          <div class="upload-subtext">Size: ${fileSize} MB - Click to change file</div>
+        `;
+        
+        continueBtn.disabled = false;
+        showStatus('PDF loaded successfully!');
+      } else {
+        showStatus('Please select a valid PDF file', 'error');
+      }
+    });
+
+    // Drag and drop
+    uploadArea.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadArea.classList.add('dragover');
+    });
+
+    uploadArea.addEventListener('dragleave', () => {
+      uploadArea.classList.remove('dragover');
+    });
+
+    uploadArea.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadArea.classList.remove('dragover');
+      const file = e.dataTransfer.files[0];
+      if (file && file.type === 'application/pdf') {
+        fileInput.files = e.dataTransfer.files;
+        fileInput.dispatchEvent(new Event('change'));
+      }
+    });
+
+    // Continue button
+    continueBtn.addEventListener('click', async () => {
+      if (selectedFile) {
+        showPage('redactionPage');
+        await loadPDF();
+      }
+    });
+
+    // Load PDF function
+    async function loadPDF() {
+      try {
+        // Store the original file as bytes for later use
+        originalFileBytes = await selectedFile.arrayBuffer();
+        
+        // Load for PDF.js rendering
+        pdfDoc = await pdfjsLib.getDocument({ data: originalFileBytes }).promise;
+        totalPages = pdfDoc.numPages;
+        
+        await renderPage(1);
+        updatePageInfo();
+        document.getElementById('downloadBtn').disabled = false;
+        showStatus('PDF loaded successfully!');
+      } catch (error) {
+        console.error('Error loading PDF:', error);
+        showStatus('Error loading PDF file: ' + (error.message || 'Unknown error'), 'error');
+      }
+    }
+
+    // Render PDF page
+    async function renderPage(pageNum) {
+      try {
+        const page = await pdfDoc.getPage(pageNum);
+        const viewport = page.getViewport({ scale: zoomLevel });
+        
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        canvas.className = 'pdf-canvas';
+        
+        const pageDiv = document.createElement('div');
+        pageDiv.className = 'pdf-page';
+        pageDiv.style.width = viewport.width + 'px';
+        pageDiv.style.height = viewport.height + 'px';
+        pageDiv.appendChild(canvas);
+        
+        const canvasContainer = document.getElementById('canvasContainer');
+        canvasContainer.innerHTML = '';
+        canvasContainer.appendChild(pageDiv);
+        
+        await page.render({
+          canvasContext: ctx,
+          viewport: viewport
+        }).promise;
+
+        setupRedactionDrawing(pageDiv);
+        renderRedactions(pageDiv);
+        
+      } catch (error) {
+        console.error('Error rendering page:', error);
+        showStatus('Error rendering PDF page: ' + (error.message || 'Unknown error'), 'error');
+      }
+    }
+
+    // Setup redaction drawing
+    function setupRedactionDrawing(pageDiv) {
+      pageDiv.addEventListener('mousedown', (e) => {
+        if (e.target.classList.contains('redaction-overlay') || 
+            e.target.classList.contains('resize-handle')) {
+          return;
+        }
+        
+        saveState();
+        isDrawing = true;
+        const rect = pageDiv.getBoundingClientRect();
+        startX = e.clientX - rect.left;
+        startY = e.clientY - rect.top;
+        
+        currentRedaction = document.createElement('div');
+        currentRedaction.className = 'redaction-overlay';
+        currentRedaction.style.left = startX + 'px';
+        currentRedaction.style.top = startY + 'px';
+        currentRedaction.style.width = '0px';
+        currentRedaction.style.height = '0px';
+        currentRedaction.style.background = getRedactionStyle();
+        
+        pageDiv.appendChild(currentRedaction);
+      });
+
+      pageDiv.addEventListener('mousemove', (e) => {
+        if (!isDrawing || !currentRedaction) return;
+        
+        const rect = pageDiv.getBoundingClientRect();
+        const currentX = e.clientX - rect.left;
+        const currentY = e.clientY - rect.top;
+        
+        const width = Math.abs(currentX - startX);
+        const height = Math.abs(currentY - startY);
+        const left = Math.min(startX, currentX);
+        const top = Math.min(startY, currentY);
+        
+        currentRedaction.style.left = left + 'px';
+        currentRedaction.style.top = top + 'px';
+        currentRedaction.style.width = width + 'px';
+        currentRedaction.style.height = height + 'px';
+      });
+
+      pageDiv.addEventListener('mouseup', () => {
+        if (!isDrawing || !currentRedaction) return;
+        
+        isDrawing = false;
+        
+        // Only keep redaction if it has meaningful size
+        if (currentRedaction.offsetWidth > 10 && currentRedaction.offsetHeight > 10) {
+          const rect = currentRedaction.getBoundingClientRect();
+          const pageRect = pageDiv.getBoundingClientRect();
+          
+          // Store redaction data for PDF generation
+          redactions.push({
+            page: currentPage,
+            x: (rect.left - pageRect.left) / zoomLevel,
+            y: (rect.top - pageRect.top) / zoomLevel,
+            width: rect.width / zoomLevel,
+            height: rect.height / zoomLevel,
+            color: selectedColor,
+            style: selectedStyle,
+            opacity: opacity
+          });
+          
+          makeRedactionMovable(currentRedaction);
+          showStatus('Redaction added');
+        } else {
+          currentRedaction.remove();
+        }
+        
+        currentRedaction = null;
+      });
+    }
+
+    // Make redaction movable and resizable
+    function makeRedactionMovable(redactionEl) {
+      let isDragging = false;
+      let dragStartX, dragStartY;
+      
+      redactionEl.addEventListener('mousedown', (e) => {
+        if (e.target.classList.contains('resize-handle')) return;
+        
+        isDragging = true;
+        dragStartX = e.clientX - redactionEl.offsetLeft;
+        dragStartY = e.clientY - redactionEl.offsetTop;
+        e.preventDefault();
+        e.stopPropagation();
+      });
+
+      document.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        
+        redactionEl.style.left = (e.clientX - dragStartX) + 'px';
+        redactionEl.style.top = (e.clientY - dragStartY) + 'px';
+      });
+
+      document.addEventListener('mouseup', () => {
+        isDragging = false;
+      });
+
+      // Add resize handles
+      const handles = ['nw', 'ne', 'sw', 'se'];
+      handles.forEach(handle => {
+        const handleEl = document.createElement('div');
+        handleEl.className = `resize-handle ${handle}`;
+        redactionEl.appendChild(handleEl);
+      });
+
+      // Double click to delete
+      redactionEl.addEventListener('dblclick', (e) => {
+        e.stopPropagation();
+        saveState();
+        redactionEl.remove();
+        
+        // Remove from redactions array
+        const rect = redactionEl.getBoundingClientRect();
+        const pageDiv = redactionEl.parentElement;
+        const pageRect = pageDiv.getBoundingClientRect();
+        
+        const x = (rect.left - pageRect.left) / zoomLevel;
+        const y = (rect.top - pageRect.top) / zoomLevel;
+        
+        redactions = redactions.filter(r => 
+          !(r.page === currentPage && 
+            Math.abs(r.x - x) < 5 && 
+            Math.abs(r.y - y) < 5)
+        );
+        
+        showStatus('Redaction removed');
+      });
+    }
+
+    // Render existing redactions on page
+    function renderRedactions(pageDiv) {
+      const pageRedactions = redactions.filter(r => r.page === currentPage);
+      pageRedactions.forEach(redaction => {
+        const redactionEl = document.createElement('div');
+        redactionEl.className = 'redaction-overlay';
+        redactionEl.style.left = (redaction.x * zoomLevel) + 'px';
+        redactionEl.style.top = (redaction.y * zoomLevel) + 'px';
+        redactionEl.style.width = (redaction.width * zoomLevel) + 'px';
+        redactionEl.style.height = (redaction.height * zoomLevel) + 'px';
+        redactionEl.style.background = getRedactionStyleFromData(redaction);
+        
+        pageDiv.appendChild(redactionEl);
+        makeRedactionMovable(redactionEl);
+      });
+    }
+
+    // Back button
+    document.getElementById('backToTools').addEventListener('click', (e) => {
+      e.preventDefault();
+      showPage('uploadPage');
+      selectedFile = null;
+      redactions = [];
+      redactionHistory = [];
+      continueBtn.disabled = true;
+      document.getElementById('undoBtn').disabled = true;
+      uploadArea.innerHTML = `
+        <div class="upload-icon">
+          <i class="fa-solid fa-cloud-arrow-up"></i>
+        </div>
+        <div class="upload-text">Drop your PDF here or click to browse</div>
+        <div class="upload-subtext">Maximum file size: 50MB</div>
+      `;
+    });
+
+    // Event listeners
+    document.getElementById('undoBtn').addEventListener('click', undo);
+
+    // Color selection
+    document.querySelectorAll('.color-swatch').forEach(swatch => {
+      swatch.addEventListener('click', () => {
+        document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('selected'));
+        swatch.classList.add('selected');
+        selectedColor = swatch.dataset.color;
+        console.log('Selected color:', selectedColor);
+      });
+    });
+
+    // Style selection
+    document.querySelectorAll('.style-button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.style-button').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        selectedStyle = btn.dataset.style;
+        console.log('Selected style:', selectedStyle);
+      });
+    });
+
+    // Opacity slider
+    const opacitySlider = document.getElementById('opacitySlider');
+    const opacityValue = document.getElementById('opacityValue');
+    opacitySlider.addEventListener('input', (e) => {
+      opacity = e.target.value / 100;
+      opacityValue.textContent = e.target.value + '%';
+    });
+
+    // Page navigation
+    document.getElementById('prevPage').addEventListener('click', async () => {
+      if (currentPage > 1) {
+        currentPage--;
+        await renderPage(currentPage);
+        updatePageInfo();
+      }
+    });
+
+    document.getElementById('nextPage').addEventListener('click', async () => {
+      if (currentPage < totalPages) {
+        currentPage++;
+        await renderPage(currentPage);
+        updatePageInfo();
+      }
+    });
+
+    // Zoom controls
+    document.getElementById('zoomIn').addEventListener('click', async () => {
+      if (zoomLevel < 3.0) {
+        zoomLevel += 0.25;
+        await renderPage(currentPage);
+        document.getElementById('zoomLevel').textContent = Math.round(zoomLevel * 100) + '%';
+      }
+    });
+
+    document.getElementById('zoomOut').addEventListener('click', async () => {
+      if (zoomLevel > 0.5) {
+        zoomLevel -= 0.25;
+        await renderPage(currentPage);
+        document.getElementById('zoomLevel').textContent = Math.round(zoomLevel * 100) + '%';
+      }
+    });
+
+    function updatePageInfo() {
+      document.getElementById('pageInfo').textContent = `Page ${currentPage} of ${totalPages}`;
+      document.getElementById('prevPage').disabled = currentPage === 1;
+      document.getElementById('nextPage').disabled = currentPage === totalPages;
+    }
+
+    // Clear all button
+    document.getElementById('clearAllBtn').addEventListener('click', () => {
+      if (redactions.filter(r => r.page === currentPage).length === 0) {
+        showStatus('No redactions to clear on this page', 'error');
+        return;
+      }
+      
+      if (confirm('Clear all redactions on current page?')) {
+        saveState();
+        document.querySelectorAll('.redaction-overlay').forEach(overlay => {
+          overlay.remove();
+        });
+        redactions = redactions.filter(r => r.page !== currentPage);
+        showStatus('Redactions cleared from current page');
+      }
+    });
+
+    // Download button - Generate redacted PDF
+    document.getElementById('downloadBtn').addEventListener('click', async () => {
+      if (redactions.length === 0) {
+        showStatus('No redactions to apply', 'error');
+        return;
+      }
+
+      const downloadBtn = document.getElementById('downloadBtn');
+      const originalText = downloadBtn.innerHTML;
+
+      try {
+        downloadBtn.disabled = true;
+        downloadBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Generating PDF...';
+        showStatus('Generating redacted PDF...');
+
+        // Read the file fresh to avoid any ArrayBuffer issues
+        const fileReader = new FileReader();
+        
+        const pdfArrayBuffer = await new Promise((resolve, reject) => {
+          fileReader.onload = (e) => resolve(e.target.result);
+          fileReader.onerror = (e) => reject(e);
+          fileReader.readAsArrayBuffer(selectedFile);
+        });
+
+        // Create a new PDFDocument
+        const pdfDoc = await PDFLib.PDFDocument.load(pdfArrayBuffer);
+        const pages = pdfDoc.getPages();
+
+        console.log('Applying', redactions.length, 'redactions to PDF');
+
+        // Apply redactions
+        for (let i = 0; i < redactions.length; i++) {
+          const redaction = redactions[i];
+          console.log(`Applying redaction ${i + 1}:`, redaction);
+          
+          if (redaction.page >= 1 && redaction.page <= pages.length) {
+            const page = pages[redaction.page - 1];
+            const { width, height } = page.getSize();
+            
+            console.log(`Page ${redaction.page} size:`, width, 'x', height);
+            
+            // Convert screen coordinates to PDF coordinates (PDF origin is bottom-left)
+            const pdfX = Math.max(0, redaction.x);
+            const pdfY = Math.max(0, height - redaction.y - redaction.height);
+            const pdfWidth = Math.min(redaction.width, width - pdfX);
+            const pdfHeight = Math.min(redaction.height, height - pdfY);
+            
+            console.log('PDF coordinates:', { x: pdfX, y: pdfY, width: pdfWidth, height: pdfHeight });
+            
+            // Ensure positive dimensions
+            if (pdfWidth > 0 && pdfHeight > 0) {
+              // Get color
+              const rgb = hexToRgb(redaction.color);
+              const color = PDFLib.rgb(rgb.r / 255, rgb.g / 255, rgb.b / 255);
+              
+              // Apply different styles
+              switch (redaction.style) {
+                case 'solid':
+                  // Simple solid rectangle
+                  page.drawRectangle({
+                    x: pdfX,
+                    y: pdfY,
+                    width: pdfWidth,
+                    height: pdfHeight,
+                    color: color,
+                    opacity: redaction.opacity
+                  });
+                  break;
+                  
+                case 'striped':
+                  // Create striped pattern with multiple rectangles
+                  const stripeWidth = 6;
+                  const stripeSpacing = 12;
+                  
+                  // Draw background first (lighter)
+                  page.drawRectangle({
+                    x: pdfX,
+                    y: pdfY,
+                    width: pdfWidth,
+                    height: pdfHeight,
+                    color: PDFLib.rgb(0.9, 0.9, 0.9),
+                    opacity: redaction.opacity * 0.3
+                  });
+                  
+                  // Draw diagonal stripes
+                  for (let offset = -pdfHeight; offset < pdfWidth + pdfHeight; offset += stripeSpacing) {
+                    const startX = pdfX + offset;
+                    const endX = startX + stripeWidth;
+                    
+                    if (endX > pdfX && startX < pdfX + pdfWidth) {
+                      // Calculate stripe coordinates for diagonal lines
+                      const clippedStartX = Math.max(startX, pdfX);
+                      const clippedEndX = Math.min(endX, pdfX + pdfWidth);
+                      
+                      if (clippedEndX > clippedStartX) {
+                        page.drawRectangle({
+                          x: clippedStartX,
+                          y: pdfY,
+                          width: clippedEndX - clippedStartX,
+                          height: pdfHeight,
+                          color: color,
+                          opacity: redaction.opacity
+                        });
+                      }
+                    }
+                  }
+                  break;
+                  
+                case 'dotted':
+                  // Create dotted pattern
+                  const dotSize = 4;
+                  const dotSpacing = 8;
+                  
+                  // Draw background
+                  page.drawRectangle({
+                    x: pdfX,
+                    y: pdfY,
+                    width: pdfWidth,
+                    height: pdfHeight,
+                    color: PDFLib.rgb(0.9, 0.9, 0.9),
+                    opacity: redaction.opacity * 0.3
+                  });
+                  
+                  // Draw dots in grid pattern
+                  for (let x = pdfX; x < pdfX + pdfWidth; x += dotSpacing) {
+                    for (let y = pdfY; y < pdfY + pdfHeight; y += dotSpacing) {
+                      if (x + dotSize <= pdfX + pdfWidth && y + dotSize <= pdfY + pdfHeight) {
+                        page.drawRectangle({
+                          x: x,
+                          y: y,
+                          width: dotSize,
+                          height: dotSize,
+                          color: color,
+                          opacity: redaction.opacity
+                        });
+                      }
+                    }
+                  }
+                  break;
+                  
+                case 'blur':
+                  // Simulate blur with multiple overlapping rectangles of different opacities
+                  const blurLayers = 5;
+                  const blurExpansion = 2;
+                  
+                  for (let layer = 0; layer < blurLayers; layer++) {
+                    const expansion = layer * blurExpansion;
+                    const layerOpacity = redaction.opacity * (0.8 - layer * 0.15);
+                    const grayValue = 0.5 + layer * 0.1;
+                    
+                    page.drawRectangle({
+                      x: Math.max(0, pdfX - expansion),
+                      y: Math.max(0, pdfY - expansion),
+                      width: Math.min(pdfWidth + expansion * 2, width - Math.max(0, pdfX - expansion)),
+                      height: Math.min(pdfHeight + expansion * 2, height - Math.max(0, pdfY - expansion)),
+                      color: PDFLib.rgb(grayValue, grayValue, grayValue),
+                      opacity: layerOpacity
+                    });
+                  }
+                  break;
+                  
+                default:
+                  // Default to solid
+                  page.drawRectangle({
+                    x: pdfX,
+                    y: pdfY,
+                    width: pdfWidth,
+                    height: pdfHeight,
+                    color: color,
+                    opacity: redaction.opacity
+                  });
+              }
+              
+              console.log(`Applied ${redaction.style} redaction ${i + 1} successfully`);
+            } else {
+              console.warn(`Skipping redaction ${i + 1} - invalid dimensions`);
+            }
+          } else {
+            console.warn(`Skipping redaction ${i + 1} - invalid page number`);
+          }
+        }
+
+        console.log('Saving PDF...');
+        
+        // Save PDF with options to ensure compatibility
+        const pdfBytes = await pdfDoc.save({
+          useObjectStreams: false,
+          addDefaultPage: false
+        });
+        
+        console.log('PDF saved, size:', pdfBytes.length, 'bytes');
+
+        // Force download using different approach
+        const blob = new Blob([pdfBytes], { 
+          type: 'application/pdf'
+        });
+        
+        // Try multiple download methods
+        if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+          // IE/Edge
+          const fileName = selectedFile.name.replace('.pdf', '_redacted.pdf');
+          window.navigator.msSaveOrOpenBlob(blob, fileName);
+        } else {
+          // Modern browsers
+          const url = URL.createObjectURL(blob);
+          
+          try {
+            // Method 1: Create download link
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = selectedFile.name.replace('.pdf', '_redacted.pdf');
+            a.style.display = 'none';
+            
+            document.body.appendChild(a);
+            a.click();
+            
+            // Clean up
+            setTimeout(() => {
+              document.body.removeChild(a);
+              URL.revokeObjectURL(url);
+            }, 100);
+            
+          } catch (linkError) {
+            console.error('Link download failed:', linkError);
+            
+            // Method 2: Force window.open as fallback
+            try {
+              const newWindow = window.open(url, '_blank');
+              if (!newWindow) {
+                throw new Error('Popup blocked');
+              }
+              setTimeout(() => URL.revokeObjectURL(url), 1000);
+            } catch (popupError) {
+              console.error('Popup download failed:', popupError);
+              showStatus('Download blocked by browser. Please allow popups or try again.', 'error');
+              return;
+            }
+          }
+        }
+        
+        showStatus('PDF downloaded successfully!');
+
+      } catch (error) {
+        console.error('Download error:', error);
+        console.error('Error stack:', error.stack);
+        showStatus('Error generating PDF: ' + (error.message || 'Unknown error'), 'error');
+      } finally {
+        downloadBtn.disabled = false;
+        downloadBtn.innerHTML = originalText;
+      }
+    });
+
+    // Initialize
+    showStatus('PDF Redaction Tool Ready!');
+  </script>
+</body>
+</html>
