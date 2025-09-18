@@ -73,7 +73,7 @@
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://yourapp.vercel.app/t&c</loc>
+        <loc>https://yourapp.vercel.app/t&amp;c</loc>
         <lastmod>2025-01-18</lastmod>
         <changefreq>yearly</changefreq>
         <priority>0.6</priority>
