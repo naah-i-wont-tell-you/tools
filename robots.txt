@@ -32,8 +32,10 @@ Allow: /chatgpt
 Allow: /gemini
 Allow: /perplexity
 Allow: /PDF
-
+Allow: /cladue
+Allow: /seo
 
 # Crawl delay (optional - only if you experience high server load)
 
 # Crawl-delay: 1
+
