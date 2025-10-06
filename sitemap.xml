@@ -714,11 +714,6 @@
 <changefreq>daily</changefreq>
 </url>
 <url>
-<loc>https://xtpdf.vercel<url>
-<loc>https://xtpdf.vercel.app/zh-cn/html-to-pdf</loc>
-<changefreq>daily</changefreq>
-</url>
-<url>
 <loc>https://xtpdf.vercel.app/tr/business</loc>
 <changefreq>daily</changefreq>
 </url>
@@ -2146,3 +2141,6 @@
 <loc>https://xtpdf.vercel.app/ru/jpg_to_pdf</loc>
 <changefreq>daily</changefreq>  
 </url>
+
+</urlset>  
+
