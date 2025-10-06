@@ -54,8 +54,9 @@
 	<changefreq>daily</changefreq>
         </url>
     <url>
-        <loc>https://xtpdf.vercel.app/t&c</loc>
+        <loc>https://xtpdf.vercel.app/terms</loc>
         <changefreq>daily</changefreq>
         </url>
 
 </urlset>
+
