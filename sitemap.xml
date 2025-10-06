@@ -58,5 +58,11 @@
         <changefreq>daily</changefreq>
         </url>
 
+	<url>
+        <loc>https://xtpdf.vercel.app/yandex_29e8e7efb1ce5904</loc>
+        <changefreq>daily</changefreq>
+        </url>
+
 </urlset>
+
 
